@@ -1,0 +1,33 @@
+.opportunityCard {
+  background-color: #ffffff;
+  color: #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin: 1.5rem auto;
+  max-width: 600px;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.opportunityCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.opportunityTitle {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #1a73e8;
+}
+
+.opportunityDescription {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.opportunityDetails p {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+}
