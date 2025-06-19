@@ -19,3 +19,11 @@ app.listen(PORT, () => {
 });
 
 app.use('/api/opportunities', opportunitiesRoute);
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
