@@ -9,15 +9,16 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  background-color: #1e1e1e;
+  color: white;
+  min-height: 100vh;
 }
 
 .title {
-  font-size: 2.8rem;
-  color: rgb(31, 172, 197);
+  text-align: center;
+  font-size: 2.5rem;
+  color: #ffffff;
   margin-bottom: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
 }
 
 .search-bar-container {
@@ -44,4 +45,20 @@ body {
   border: 1px solid #77c9f1;
   outline: none;
   box-shadow: 0 0 6px rgba(119, 201, 241, 0.4);
+}
+.controls-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.status-msg, .error-msg {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.error-msg {
+  color: #ff6b6b;
 }
