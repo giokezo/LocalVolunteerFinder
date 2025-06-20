@@ -1,15 +1,15 @@
-import React from 'react';
+import {type VolunteerOpportunity } from '../../types/VolunteerOpportunity';
 import { OpportunityCard } from './OpportunityCard';
-import {type VolunteerOpportunity } from '../../../../backend/src/models/VolunteerOpportunity';
+import './OpportunityList.css';
 
 interface Props {
   opportunities: VolunteerOpportunity[];
 }
 
-const OpportunityList: React.FC<Props> = ({ opportunities }) => {
+const OpportunityList = ({ opportunities }: Props) => {
   return (
     <div className="opportunity-list">
-      {opportunities.map(op => (
+      {opportunities.map((op) => (
         <OpportunityCard key={op.id} opportunity={op} />
       ))}
     </div>
