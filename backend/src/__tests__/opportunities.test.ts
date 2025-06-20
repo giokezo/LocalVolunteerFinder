@@ -44,3 +44,47 @@ describe('GET /api/opportunities?keyword=...', () => {
     expect(res.body.length).toBe(0);
   });
 });
+
+describe('GET /api/opportunities with type and keyword filters', () => {
+  it('should return all education-type opportunities', async () => {
+    const res = await request(app).get('/api/opportunities?type=education');
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+    for (const opp of res.body) {
+      expect(opp.type.toLowerCase()).toBe('education');
+    }
+  });
+
+  it('should return at least one result for type=environment and keyword=cleanup', async () => {
+    const res = await request(app).get('/api/opportunities?type=environment&keyword=cleanup');
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0); 
+    for (const opp of res.body) {
+      expect(opp.type.toLowerCase()).toBe('environment');
+      expect(
+        opp.title.toLowerCase().includes('cleanup') ||
+        opp.description.toLowerCase().includes('cleanup')
+      ).toBe(true);
+    }
+  });
+
+  it('should return empty array if type matches but keyword does not', async () => {
+    const res = await request(app).get('/api/opportunities?type=education&keyword=cleanup');
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBe(0);
+  });
+
+  it('should return empty array if keyword matches but type does not', async () => {
+    const res = await request(app).get('/api/opportunities?type=animal%20care&keyword=math');
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBe(0);
+  });
+});
