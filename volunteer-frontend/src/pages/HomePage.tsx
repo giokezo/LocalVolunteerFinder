@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getOpportunities } from '../api/opportunityService';
 import { OpportunityCard } from '../components/card/OpportunityCard';
 import {type VolunteerOpportunity } from '../types/VolunteerOpportunity';
+import SearchBar from '../components/card/SearchBar';
+
 
 export const dummyOpportunities: VolunteerOpportunity[] = [
   {
@@ -71,6 +73,7 @@ const HomePage = () => {
   return (
     <div>
       <h1>Volunteer Opportunities</h1>
+      <SearchBar /> {/* ✅ Render the new component */}
 
       {/* {isLoading && <div>Loading...</div>} */}
 
