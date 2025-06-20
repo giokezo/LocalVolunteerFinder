@@ -4,7 +4,18 @@ import { opportunities } from '../data/opportunities';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.json(opportunities);
+  let results = [...opportunities]; 
+
+  const keyword = (req.query.keyword as string)?.toLowerCase();
+
+  if (keyword) {
+    results = results.filter(opp =>
+      opp.title.toLowerCase().includes(keyword) ||
+      opp.description.toLowerCase().includes(keyword)
+    );
+  }
+
+  res.json(results);
 });
 
 router.get('/:id', (req, res) => {
