@@ -49,27 +49,38 @@ export const dummyOpportunities: VolunteerOpportunity[] = [
 
 const HomePage = () => {
   const [opportunities, setOpportunities] = useState<VolunteerOpportunity[]>(dummyOpportunities);
-  const [isLoading, setIsLoading] = useState(true); // ✅ NEW loading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getOpportunities()
-      .then(data => {
-        setOpportunities(data);
-        setIsLoading(false); // ✅ Done loading
-      })
-      .catch(() => {
-        setIsLoading(false); // ✅ Still stop loading even if error occurs
-        // You can handle error messaging here too
-      });
+    // getOpportunities()
+    //   .then(data => {
+    //     setOpportunities(data);
+    //   })
+    //   .catch((err) => {
+    //     setError('Failed to load volunteer opportunities. Please try again later.');
+    //     console.error('API Error:', err);
+    //   })
+    //   .finally(() => {
+    //     setIsLoading(false); // ✅ Always stop loading at the end\
+    //     console.log(opportunities)
+    //   });
+    // NOT USING YET
   }, []);
 
   return (
     <div>
       <h1>Volunteer Opportunities</h1>
-      
-      {isLoading ? (
-        <div>Loading...</div> // ✅ Loading state
-      ) : (
+
+      {/* {isLoading && <div>Loading...</div>} */}
+
+      {error && <div style={{ color: 'red', marginTop: '1rem' }}>Error: {error}</div>}
+
+      {!isLoading && !error && opportunities.length === 0 && (
+        <div style={{ marginTop: '1rem' }}>No volunteer opportunities found.</div>
+      )}
+
+      {!isLoading && !error && opportunities.length > 0 && (
         opportunities.map(op => (
           <OpportunityCard key={op.id} opportunity={op} />
         ))
@@ -77,6 +88,5 @@ const HomePage = () => {
     </div>
   );
 };
-
 
 export default HomePage;
