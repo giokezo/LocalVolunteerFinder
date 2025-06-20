@@ -49,19 +49,34 @@ export const dummyOpportunities: VolunteerOpportunity[] = [
 
 const HomePage = () => {
   const [opportunities, setOpportunities] = useState<VolunteerOpportunity[]>(dummyOpportunities);
+  const [isLoading, setIsLoading] = useState(true); // ✅ NEW loading state
 
   useEffect(() => {
-    getOpportunities().then(setOpportunities);
+    getOpportunities()
+      .then(data => {
+        setOpportunities(data);
+        setIsLoading(false); // ✅ Done loading
+      })
+      .catch(() => {
+        setIsLoading(false); // ✅ Still stop loading even if error occurs
+        // You can handle error messaging here too
+      });
   }, []);
 
   return (
     <div>
       <h1>Volunteer Opportunities</h1>
-      {opportunities.map(op => (
-        <OpportunityCard key={op.id} opportunity={op} />
-      ))}
+      
+      {isLoading ? (
+        <div>Loading...</div> // ✅ Loading state
+      ) : (
+        opportunities.map(op => (
+          <OpportunityCard key={op.id} opportunity={op} />
+        ))
+      )}
     </div>
   );
 };
+
 
 export default HomePage;
