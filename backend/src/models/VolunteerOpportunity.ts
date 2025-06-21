@@ -5,4 +5,5 @@ export interface VolunteerOpportunity {
   date: string;
   location: string;
   type: string; // e.g., "environment", "education"
+  attendees: string[];
 }

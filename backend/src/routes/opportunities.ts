@@ -1,5 +1,7 @@
 import express from 'express';
 import { findOpportunities, findOpportunityById } from '../services/opportunityService';
+import { authenticate, AuthRequest } from '../middleware/authMiddleware';
+import { opportunities } from '../data/opportunities';
 
 const router = express.Router();
 
@@ -36,6 +38,29 @@ router.get('/:id', (req, res) => {
   } else {
     res.status(404).json({ error: 'Opportunity not found' });
   }
+});
+
+/**
+ * @route POST /api/opportunities/:id/signup
+ * @description Allows a logged-in user to sign up for an opportunity
+ * @access Protected
+ */
+router.post('/:id/signup', authenticate, (req: AuthRequest, res) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+
+  const opportunity = opportunities.find(opp => opp.id === id);
+
+  if (!opportunity) {
+    res.status(404).json({ error: 'Opportunity not found' });
+    return;
+  }
+
+  if (!opportunity.attendees.includes(userId)) {
+    opportunity.attendees.push(userId);
+  }
+
+  res.status(200).json({ message: 'Successfully signed up!' });
 });
 
 export default router;

@@ -7,7 +7,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Help clean up the local beach.",
     date: "2025-06-10",
     location: "Santa Monica, CA",
-    type: "environment"
+    type: "environment",
+    attendees: [],
   },
   {
     id: "2",
@@ -15,7 +16,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Volunteer to tutor students in math and reading.",
     date: "2025-06-15",
     location: "Los Angeles, CA",
-    type: "education"
+    type: "education",
+    attendees: [],
   },
   {
     id: "3",
@@ -23,7 +25,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Assist with caring for shelter animals.",
     date: "2025-06-20",
     location: "San Diego, CA",
-    type: "animal care"
+    type: "animal care",
+    attendees: [],
   },
   {
     id: "4",
@@ -31,7 +34,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Plant trees and remove invasive species in the city park.",
     date: "2025-06-18",
     location: "Sacramento, CA",
-    type: "environment"
+    type: "environment",
+    attendees: [],
   },
   {
     id: "5",
@@ -39,7 +43,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Guide students through college applications and career choices.",
     date: "2025-06-22",
     location: "Fresno, CA",
-    type: "education"
+    type: "education",
+    attendees: [],
   },
   {
     id: "6",
@@ -47,7 +52,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Provide exercise and socialization for shelter dogs.",
     date: "2025-06-12",
     location: "San Francisco, CA",
-    type: "animal care"
+    type: "animal care",
+    attendees: [],
   },
   {
     id: "7",
@@ -55,7 +61,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Help maintain and harvest crops at the community garden.",
     date: "2025-06-25",
     location: "Berkeley, CA",
-    type: "environment"
+    type: "environment",
+    attendees: [],
   },
   {
     id: "8",
@@ -63,7 +70,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Assist students with homework and study skills.",
     date: "2025-06-30",
     location: "Oakland, CA",
-    type: "education"
+    type: "education",
+    attendees: [],
   },
   {
     id: "9",
@@ -71,7 +79,8 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Spend time socializing and caring for cats awaiting adoption.",
     date: "2025-07-01",
     location: "San Jose, CA",
-    type: "animal care"
+    type: "animal care",
+    attendees: [],
   },
   {
     id: "10",
@@ -79,6 +88,7 @@ export const opportunities: VolunteerOpportunity[] = [
     description: "Help remove trash and debris from the riverbanks.",
     date: "2025-06-28",
     location: "Redding, CA",
-    type: "environment"
+    type: "environment",
+    attendees: [],
   },
 ];
