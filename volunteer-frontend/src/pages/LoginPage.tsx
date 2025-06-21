@@ -1,23 +1,32 @@
-import React from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/authService';
+import { useAuth } from '../context/AuthContext';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const user = await loginUser({ email, password });
+      login(user); // updates global auth state
+      navigate('/');
+    } catch (err: any) {
+      alert(err.message || 'Login failed');
+    }
+  };
+
   return (
-    <div style={{ maxWidth: 400, margin: '2rem auto' }}>
+    <form onSubmit={handleSubmit}>
       <h2>Login</h2>
-      <form>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="email">Email:</label><br />
-          <input type="email" id="email" name="email" required style={{ width: '100%' }} />
-        </div>
-
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="password">Password:</label><br />
-          <input type="password" id="password" name="password" required style={{ width: '100%' }} />
-        </div>
-
-        <button type="submit" style={{ width: '100%' }}>Login</button>
-      </form>
-    </div>
+      <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
+      <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" />
+      <button type="submit">Login</button>
+    </form>
   );
 };
 
