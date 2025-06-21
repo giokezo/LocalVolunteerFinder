@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import opportunitiesRoute from './routes/opportunities';
 import 'dotenv/config';
+import usersRoute from './routes/users';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/opportunities', opportunitiesRoute);
+
+app.use('/api/users', usersRoute);
 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'API route not found' });
