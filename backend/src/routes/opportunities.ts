@@ -1,38 +1,21 @@
 import express from 'express';
-import { opportunities } from '../data/opportunities';
+import { findOpportunities, findOpportunityById } from '../services/opportunityService';
 
 const router = express.Router();
 
-// GET /api/opportunities with keyword and type filtering
 router.get('/', (req, res) => {
-  let results = [...opportunities]; 
+  const { keyword, type } = req.query;
+  const opportunities = findOpportunities({
+    keyword: keyword as string,
+    type: type as string
+  });
 
-  const keyword = (req.query.keyword as string)?.toLowerCase();
-  const type = (req.query.type as string)?.toLowerCase();
-
-  // Filter by keyword in title or description
-  if (keyword) {
-    results = results.filter(opp =>
-      opp.title.toLowerCase().includes(keyword) ||
-      opp.description.toLowerCase().includes(keyword)
-    );
-  }
-
-  // Filter by opportunity type
-  if (type) {
-    results = results.filter(opp =>
-      opp.type.toLowerCase() === type
-    );
-  }
-
-  res.json(results);
+  res.json(opportunities);
 });
 
-// GET /api/opportunities/:id for single opportunity
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-
-  const opportunity = opportunities.find(opp => opp.id === id);
+  const opportunity = findOpportunityById(id);
 
   if (opportunity) {
     res.json(opportunity);
