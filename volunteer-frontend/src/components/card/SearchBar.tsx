@@ -1,13 +1,21 @@
-import React from 'react';
-import './SearchBar.css'; // optional if you want to style later
+// SearchBar.tsx
+import React from "react";
+import "../../App.css"; // or HomePage.module.css
 
-const SearchBar = () => {
+interface Props {
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+}
+
+const SearchBar: React.FC<Props> = ({ searchTerm, setSearchTerm }) => {
   return (
-    <div className="search-bar">
+    <div className="search-bar-container">
       <input
         type="text"
         placeholder="Search by keyword..."
         className="search-input"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
     </div>
   );

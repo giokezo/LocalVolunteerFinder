@@ -1,0 +1,22 @@
+.filterDropdown {
+  height: 2.5rem;
+  padding: 0 1rem;
+  background-color: #2b2b2b;
+  color: #cceeff; /* Match h3 title color from OpportunityCard */
+  border: 1px solid #444;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: border 0.2s ease;
+}
+
+.filterDropdown:focus {
+  outline: none;
+  border-color: #00bcd4;
+}
+
+.filterDropdown option {
+  background-color: #2b2b2b;
+  color: #cceeff;
+}
