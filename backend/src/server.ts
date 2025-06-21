@@ -20,6 +20,15 @@ app.listen(PORT, () => {
 
 app.use('/api/opportunities', opportunitiesRoute);
 
+// 404 handler for unknown API routes
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'API route not found' });
+});
+
+app.use((req, res) => {
+  res.status(404).send('Route not found');
+});
+
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
