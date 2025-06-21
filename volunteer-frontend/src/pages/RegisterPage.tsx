@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../api/authService';
 import { useAuth } from '../context/AuthContext';
+import styles from './AuthForm.module.css';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -14,7 +15,7 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       const user = await registerUser({ name, email, password });
-      login(user); // updates global auth state
+      login(user);
       navigate('/');
     } catch (err: any) {
       alert(err.message || 'Registration failed');
@@ -22,8 +23,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Register</h2>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <h2 className={styles.title}>Register</h2>
       <input value={name} onChange={e => setName(e.target.value)} placeholder="Name" />
       <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" />
