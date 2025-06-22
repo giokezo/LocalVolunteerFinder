@@ -1,25 +1,21 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { users } from '../data/users';
-import { opportunities as opportunitiesData } from '../data/opportunities';
+import { getUsers, saveUsers } from '../data/users'; 
 import { User } from '../models/User';
 import { authenticate, AuthRequest } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
-/**
- * @route GET /api/users
- * @description Get a list of all users.
- * @returns {User[]} An array of users.
- */
-router.get('/', (req, res) => {
-  res.json(users);
+// ======================= THIS IS THE NEW TEST ROUTE =======================
+// It helps us check if this file is being loaded correctly by server.ts.
+router.get('/test', (req: Request, res: Response) => {
+  res.send('User route is working!');
 });
+// ==========================================================================
 
 /**
  * @route POST /api/users/register
- * @description Register a new user
  */
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -30,6 +26,7 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const users = getUsers();
     const existingUser = users.find(user => user.email === email);
     if (existingUser) {
       res.status(400).json({ error: 'User already exists.' });
@@ -47,92 +44,33 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     };
 
     users.push(newUser);
+    saveUsers(users);
 
     const { password: _, ...userWithoutPassword } = newUser;
-    res.status(201).json(userWithoutPassword);
+    res.status(201).json({
+      message: 'Registration successful.',
+      user: userWithoutPassword
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Registration error:', err);
     res.status(500).json({ error: 'Server error during registration' });
   }
 });
 
 /**
- * @route POST /api/users/me/saved-opportunities
- * @desc Save an opportunity for the logged-in user
- */
-router.post('/me/saved-opportunities', authenticate, (req: AuthRequest, res) => {
-  const userId = req.user.id;
-  const { opportunityId } = req.body;
-
-  if (!opportunityId) {
-    res.status(400).json({ error: 'Opportunity ID is required' });
-    return;
-  }
-
-  const user = users.find(u => u.id === userId);
-  if (!user) {
-    res.status(404).json({ error: 'User not found' });
-    return;
-  }
-
-  if (!user.savedOpportunities.includes(opportunityId)) {
-    user.savedOpportunities.push(opportunityId);
-  }
-
-  res.json({ message: 'Opportunity saved', savedOpportunities: user.savedOpportunities });
-});
-
-/**
- * @route DELETE /api/users/me/saved-opportunities/:opportunityId
- * @desc Unsave an opportunity for the logged-in user
- */
-router.delete('/me/saved-opportunities/:opportunityId', authenticate, (req: AuthRequest, res) => {
-  const userId = req.user.id;
-  const { opportunityId } = req.params;
-
-  const user = users.find(u => u.id === userId);
-  if (!user) {
-    res.status(404).json({ error: 'User not found' });
-    return;
-  }
-
-  user.savedOpportunities = user.savedOpportunities.filter(id => id !== opportunityId);
-
-  res.json({ message: 'Opportunity removed from saved', savedOpportunities: user.savedOpportunities });
-});
-
-/**
  * @route GET /api/users/me
- * @description Get the current authenticated user's profile (excluding password)
- * @access Protected
  */
-router.get('/me', authenticate, (req: AuthRequest, res) => {
-  const userId = req.user.id;
-  const user = users.find((u) => u.id === userId);
+router.get('/me', authenticate, (req: AuthRequest, res: Response) => {
+  const users = getUsers();
+  const user = users.find(u => u.id === req.user.id);
+
   if (!user) {
     res.status(404).json({ error: 'User not found' });
     return;
   }
+
   const { password, ...userWithoutPassword } = user;
   res.json(userWithoutPassword);
-});
-
-/**
- * @route GET /api/users/me/saved-opportunities
- * @description Get full opportunity objects saved by the user
- * @access Protected
- */
-router.get('/me/saved-opportunities', authenticate, (req: AuthRequest, res) => {
-  const userId = req.user.id;
-  const user = users.find((u) => u.id === userId);
-  if (!user) {
-    res.status(404).json({ error: 'User not found' });
-    return;
-  }
-  const savedOpportunities = opportunitiesData.filter((opp) =>
-    user.savedOpportunities.includes(opp.id)
-  );
-  res.json(savedOpportunities);
 });
 
 export default router;

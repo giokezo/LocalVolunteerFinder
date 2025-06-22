@@ -14,20 +14,29 @@ interface LoginCredentials {
 }
 
 export const registerUser = async (userData: RegisterData) => {
-  const response = await axios.post(`${API_BASE_URL}/users/register`, userData);
-  return response.data;
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/register`, userData);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data?.error || 'Registration failed';
+  }
 };
 
 export const loginUser = async (credentials: LoginCredentials) => {
-  const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials);
-  const { token } = response.data;
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials);
+    const { token } = response.data;
 
-  if (token) {
-    localStorage.setItem('token', token);
+    if (token) {
+      localStorage.setItem('token', token);
+    }
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data?.error || 'Login failed';
   }
-
-  return response.data;
 };
+
 
 export const logoutUser = () => {
   localStorage.removeItem('token');
@@ -37,11 +46,20 @@ export const getCurrentUser = async () => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
 
-  const response = await axios.get(`${API_BASE_URL}/users/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    const response = await axios.get(`${API_BASE_URL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  return response.data;
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      logoutUser(); // auto-logout on token expiration
+    }
+    throw error.response?.data?.error || 'Failed to fetch user';
+  }
 };
+
+

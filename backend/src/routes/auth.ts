@@ -1,8 +1,7 @@
-// src/routes/auth.ts
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { users } from '../data/users';
+import { getUsers } from '../data/users';
 
 const router = express.Router();
 
@@ -18,6 +17,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  const users = getUsers();
   const user = users.find(u => u.email === email);
   if (!user) {
     res.status(401).json({ error: 'Invalid email or password' });
@@ -32,8 +32,8 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 
   try {
     if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET is not defined in environment variables');
-      res.status(500).json({ error: 'Server configuration error' });
+      console.error('JWT_SECRET is not defined');
+      res.status(500).json({ error: 'Server config error' });
       return;
     }
 
