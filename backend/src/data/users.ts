@@ -5,12 +5,14 @@ export const users: User[] = [
     id: '1',
     name: 'Alice Johnson',
     email: 'alice@example.com',
-    password: 'password123'
+    password: 'password123',
+    savedOpportunities: []
   },
   {
     id: '2',
     name: 'Bob Smith',
     email: 'bob@example.com',
-    password: 'secret456'
+    password: 'secret456',
+    savedOpportunities: []
   }
 ];
