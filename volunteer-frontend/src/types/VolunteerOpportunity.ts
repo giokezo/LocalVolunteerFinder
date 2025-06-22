@@ -1,8 +1,8 @@
 export interface VolunteerOpportunity {
-  id: string;
-  title: string;
-  description: string;
   date: string;
+  description: string;
+  id: string;
   location: string;
+  title: string;
   type: string;
 }

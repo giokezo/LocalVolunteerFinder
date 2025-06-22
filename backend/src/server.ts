@@ -1,43 +1,30 @@
+// backend/src/server.ts
 import express from 'express';
 import cors from 'cors';
-import opportunitiesRoute from './routes/opportunities';
-import 'dotenv/config';
-import usersRoute from './routes/users';
-import authRoute from './routes/auth';
+import dotenv from 'dotenv';
+
+// Import your route modules
+import opportunityRoutes from './routes/opportunities';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users'; // <--- THIS LINE IS CRITICAL
+
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware setup
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Volunteer API is running!');
+// --- API Routes ---
+// This tells Express: "Any request starting with /api/users should be handled by the userRoutes router."
+app.use('/api/users', userRoutes); // <--- THIS LINE IS CRITICAL
+app.use('/api/auth', authRoutes);
+app.use('/api/opportunities', opportunityRoutes);
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-app.use('/api/opportunities', opportunitiesRoute);
-
-app.use('/api/users', usersRoute);
-
-app.use('/api/auth', authRoute);
-
-app.use('/api', (req, res) => {
-  res.status(404).json({ error: 'API route not found' });
-});
-
-app.use((req, res) => {
-  res.status(404).send('Route not found');
-});
-
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unexpected error:', err);
-  res.status(500).json({ error: 'An unexpected error occurred' });
-});
-
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
-
-export default app;

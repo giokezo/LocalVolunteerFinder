@@ -1,18 +1,16 @@
+// src/data/users.ts
 import { User } from '../models/User';
+import fs from 'fs';
+import path from 'path';
 
-export const users: User[] = [
-  {
-    id: '1',
-    name: 'Alice Johnson',
-    email: 'alice@example.com',
-    password: 'password123',
-    savedOpportunities: []
-  },
-  {
-    id: '2',
-    name: 'Bob Smith',
-    email: 'bob@example.com',
-    password: 'secret456',
-    savedOpportunities: []
-  }
-];
+const filePath = path.join(__dirname, 'users.json');
+
+export function getUsers(): User[] {
+  if (!fs.existsSync(filePath)) return [];
+  const data = fs.readFileSync(filePath, 'utf-8');
+  return JSON.parse(data);
+}
+
+export function saveUsers(users: User[]) {
+  fs.writeFileSync(filePath, JSON.stringify(users, null, 2), 'utf-8');
+}

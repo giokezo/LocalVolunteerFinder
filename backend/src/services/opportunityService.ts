@@ -1,30 +1,54 @@
+// backend/src/services/opportunityService.ts
+
 import { opportunities } from '../data/opportunities';
 import { VolunteerOpportunity } from '../models/VolunteerOpportunity';
 
 interface OpportunityFilters {
   keyword?: string;
   type?: string;
+  page?: number;
+  limit?: number;
 }
 
-export function findOpportunities(filters: OpportunityFilters): VolunteerOpportunity[] {
-  let results = [...opportunities];
+// THIS IS THE CORRECT, FINAL VERSION OF THIS FUNCTION
+export function findOpportunities(filters: OpportunityFilters) {
+  const { keyword, type, page = 1, limit = 10 } = filters;
+  
+  // 1. Start with the full, unfiltered list.
+  let filteredResults = [...opportunities];
 
-  if (filters.keyword) {
-    const keyword = filters.keyword.toLowerCase();
-    results = results.filter(opp =>
-      opp.title.toLowerCase().includes(keyword) ||
-      opp.description.toLowerCase().includes(keyword)
+  // 2. Apply keyword filter if it exists.
+  if (keyword) {
+    const keywordLower = keyword.toLowerCase();
+    filteredResults = filteredResults.filter(opp =>
+      opp.title.toLowerCase().includes(keywordLower) ||
+      opp.description.toLowerCase().includes(keywordLower)
     );
   }
 
-  if (filters.type) {
-    const type = filters.type.toLowerCase();
-    results = results.filter(opp =>
-      opp.type.toLowerCase() === type
+  // 3. Apply type filter if it exists.
+  if (type) {
+    const typeLower = type.toLowerCase();
+    filteredResults = filteredResults.filter(opp =>
+      opp.type.toLowerCase() === typeLower
     );
   }
 
-  return results;
+  // 4. After all filtering, calculate total counts from the *filtered* list.
+  const totalOpportunities = filteredResults.length;
+  const totalPages = Math.ceil(totalOpportunities / limit);
+
+  // 5. Slice the filtered list to get the items for the current page.
+  const startIndex = (page - 1) * limit;
+  const paginatedOpportunities = filteredResults.slice(startIndex, startIndex + limit);
+
+  // 6. Return the structured response object. This is the crucial part.
+  return {
+    opportunities: paginatedOpportunities,
+    currentPage: page,
+    totalPages,
+    totalOpportunities,
+  };
 }
 
 export function findOpportunityById(id: string): VolunteerOpportunity | undefined {
