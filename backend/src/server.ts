@@ -12,7 +12,7 @@ import userRoutes from './routes/users'; // <--- THIS LINE IS CRITICAL
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Middleware setup
 app.use(cors());
