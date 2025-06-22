@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { users } from '../data/users';
+import { opportunities as opportunitiesData } from '../data/opportunities';
 import { User } from '../models/User';
 import { authenticate, AuthRequest } from '../middleware/authMiddleware';
 
@@ -98,6 +99,40 @@ router.delete('/me/saved-opportunities/:opportunityId', authenticate, (req: Auth
   user.savedOpportunities = user.savedOpportunities.filter(id => id !== opportunityId);
 
   res.json({ message: 'Opportunity removed from saved', savedOpportunities: user.savedOpportunities });
+});
+
+/**
+ * @route GET /api/users/me
+ * @description Get the current authenticated user's profile (excluding password)
+ * @access Protected
+ */
+router.get('/me', authenticate, (req: AuthRequest, res) => {
+  const userId = req.user.id;
+  const user = users.find((u) => u.id === userId);
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+  const { password, ...userWithoutPassword } = user;
+  res.json(userWithoutPassword);
+});
+
+/**
+ * @route GET /api/users/me/saved-opportunities
+ * @description Get full opportunity objects saved by the user
+ * @access Protected
+ */
+router.get('/me/saved-opportunities', authenticate, (req: AuthRequest, res) => {
+  const userId = req.user.id;
+  const user = users.find((u) => u.id === userId);
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+  const savedOpportunities = opportunitiesData.filter((opp) =>
+    user.savedOpportunities.includes(opp.id)
+  );
+  res.json(savedOpportunities);
 });
 
 export default router;
