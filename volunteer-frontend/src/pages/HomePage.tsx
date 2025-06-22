@@ -38,6 +38,14 @@ const HomePage = () => {
     loadData();
   }, [isAuthenticated]);
 
+  const handleToggleSave = (id: string, saved: boolean) => {
+    if (saved) {
+      setSavedIds(prev => [...prev, id]);
+    } else {
+      setSavedIds(prev => prev.filter(savedId => savedId !== id));
+    }
+  };
+
   const filteredOpportunities = opportunities.filter((op) =>
     (`${op.title} ${op.description}`.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (selectedType === "" || op.type.toLowerCase() === selectedType.toLowerCase())
@@ -56,7 +64,11 @@ const HomePage = () => {
       {error && <div className="error-msg">{error}</div>}
 
       {!isLoading && !error && (
-        <OpportunityList opportunities={filteredOpportunities} savedIds={savedIds} />
+        <OpportunityList 
+          opportunities={filteredOpportunities} 
+          savedIds={savedIds}
+          onToggleSave={handleToggleSave}
+        />
       )}
     </div>
   );
