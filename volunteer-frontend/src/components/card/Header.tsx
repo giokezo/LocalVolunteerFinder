@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext.tsx';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -13,22 +13,22 @@ const Header = () => {
 
   return (
     <header className={styles.header}>
-      <div className={styles['nav-links']}>
+      <nav>
         <Link to="/">Home</Link>
-        {!isAuthenticated && (
+        <Link to="/about">About</Link>
+        {isAuthenticated && <Link to="/saved-opportunities">Saved</Link>}
+        {isAuthenticated ? (
+          <>
+            <span>Welcome, {user?.name}</span>
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
           <>
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </>
         )}
-      </div>
-
-      {isAuthenticated && (
-        <div className={styles['user-section']}>
-          <span>Welcome, {user?.name}</span>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      )}
+      </nav>
     </header>
   );
 };
