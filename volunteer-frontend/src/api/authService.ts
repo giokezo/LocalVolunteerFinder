@@ -32,3 +32,16 @@ export const loginUser = async (credentials: LoginCredentials) => {
 export const logoutUser = () => {
   localStorage.removeItem('token');
 };
+
+export const getCurrentUser = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('No token found');
+
+  const response = await axios.get(`${API_BASE_URL}/users/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
