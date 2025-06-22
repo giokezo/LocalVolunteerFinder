@@ -1,7 +1,70 @@
 .opportunity-list {
-   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 5rem;
-  padding: 3rem 2rem;
-  justify-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animation for cards */
+.opportunity-list > * {
+  animation: slideUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.opportunity-list > *:nth-child(1) { animation-delay: 0.1s; }
+.opportunity-list > *:nth-child(2) { animation-delay: 0.2s; }
+.opportunity-list > *:nth-child(3) { animation-delay: 0.3s; }
+.opportunity-list > *:nth-child(4) { animation-delay: 0.4s; }
+.opportunity-list > *:nth-child(5) { animation-delay: 0.5s; }
+.opportunity-list > *:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Empty state */
+.opportunity-list:empty::after {
+  content: 'No opportunities found matching your criteria.';
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.1rem;
+  padding: 60px 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 2px dashed #d1d5db;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .opportunity-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .opportunity-list {
+    gap: 12px;
+  }
 }

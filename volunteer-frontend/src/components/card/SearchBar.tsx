@@ -1,4 +1,3 @@
-// SearchBar.tsx
 import React from "react";
 import "../../App.css"; // or HomePage.module.css
 
