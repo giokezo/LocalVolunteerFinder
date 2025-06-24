@@ -16,7 +16,12 @@ const Header = () => {
       <nav>
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
-        {isAuthenticated && <Link to="/saved-opportunities">Saved</Link>}
+        {isAuthenticated && (
+          <>
+            <Link to="/dashboard">Dashboard</Link> {/* <-- Add Dashboard link */}
+            <Link to="/saved-opportunities">Saved</Link>
+          </>
+        )}
         {isAuthenticated ? (
           <>
             <span>Welcome, {user?.name}</span>

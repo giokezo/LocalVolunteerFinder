@@ -96,6 +96,27 @@ router.delete('/me/saved-opportunities/:id', authenticate, (req: AuthRequest, re
   res.status(200).json({ message: 'Opportunity unsaved successfully' });
 });
 
+/**
+ * @route GET /api/users/me/signed-up-opportunities
+ * @desc Get all opportunities the logged-in user has signed up for
+ */
+router.get('/me/signed-up-opportunities', authenticate, (req: AuthRequest, res: Response) => {
+  const users = getUsers();
+  const user = users.find(u => u.id === req.user.id);
+
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  // Filter the main opportunities list to find ones where the user's ID is in the attendees array
+  const signedUpOps = opportunities.filter(op => 
+    op.attendees.includes(user.id)
+  );
+
+  res.json(signedUpOps);
+});
+
 // ======================================================================================
 
 export default router;

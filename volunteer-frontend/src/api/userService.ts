@@ -25,6 +25,15 @@ export const getSavedOpportunities = async (): Promise<VolunteerOpportunity[]> =
 };
 
 /**
+ * @desc Fetches the full opportunity objects that the user has signed up for.
+ * @returns A promise that resolves to an array of VolunteerOpportunity.
+ */
+export const getSignedUpOpportunities = async (): Promise<VolunteerOpportunity[]> => {
+  const response = await axios.get<VolunteerOpportunity[]>(`${BASE_URL}/me/signed-up-opportunities`, getAuthHeaders());
+  return response.data;
+};
+
+/**
  * @desc Saves an opportunity to the user's profile.
  * @param opportunityId The ID of the opportunity to save.
  */
