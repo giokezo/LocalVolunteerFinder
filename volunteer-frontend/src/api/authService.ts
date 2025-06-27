@@ -15,6 +15,7 @@ interface LoginCredentials {
 
 export const registerUser = async (userData: RegisterData) => {
   try {
+    console.log(`${API_BASE_URL}/users/register`)
     const response = await axios.post(`${API_BASE_URL}/users/register`, userData);
     return response.data;
   } catch (error: any) {

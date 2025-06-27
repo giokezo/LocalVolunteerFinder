@@ -17,7 +17,7 @@ const LoginPage = () => {
       login(user);
       navigate('/');
     } catch (err: any) {
-      alert(err.message || 'Login failed');
+      console.log(err.message || 'Login failed');
     }
   };
 

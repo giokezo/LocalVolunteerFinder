@@ -1,4 +1,5 @@
 "use strict";
+// backend/src/routes/users.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -28,13 +29,12 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const uuid_1 = require("uuid");
 const users_1 = require("../data/users");
 const authMiddleware_1 = require("../middleware/authMiddleware");
+const opportunities_1 = require("../data/opportunities");
 const router = express_1.default.Router();
-// ======================= THIS IS THE NEW TEST ROUTE =======================
-// It helps us check if this file is being loaded correctly by server.ts.
+// Test route to ensure the file is loaded
 router.get('/test', (req, res) => {
     res.send('User route is working!');
 });
-// ==========================================================================
 /**
  * @route POST /api/users/register
  */
@@ -85,4 +85,71 @@ router.get('/me', authMiddleware_1.authenticate, (req, res) => {
     const { password } = user, userWithoutPassword = __rest(user, ["password"]);
     res.json(userWithoutPassword);
 });
+// ======================= USER-SPECIFIC OPPORTUNITY ROUTES =======================
+/**
+ * @route GET /api/users/me/saved-opportunities
+ */
+router.get('/me/saved-opportunities', authMiddleware_1.authenticate, (req, res) => {
+    const users = (0, users_1.getUsers)();
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    const savedOps = opportunities_1.opportunities.filter(op => user.savedOpportunities.includes(op.id));
+    res.json(savedOps);
+});
+/**
+ * @route GET /api/users/me/signed-up-opportunities
+ */
+router.get('/me/signed-up-opportunities', authMiddleware_1.authenticate, (req, res) => {
+    const users = (0, users_1.getUsers)();
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    const signedUpOps = opportunities_1.opportunities.filter(op => op.attendees.includes(user.id));
+    res.json(signedUpOps);
+});
+/**
+ * @route POST /api/users/me/saved-opportunities
+ */
+router.post('/me/saved-opportunities', authMiddleware_1.authenticate, (req, res) => {
+    const { opportunityId } = req.body;
+    if (!opportunityId) {
+        res.status(400).json({ error: 'Opportunity ID is required' });
+        return;
+    }
+    const users = (0, users_1.getUsers)();
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    if (!user.savedOpportunities.includes(opportunityId)) {
+        user.savedOpportunities.push(opportunityId);
+        (0, users_1.saveUsers)(users);
+    }
+    res.status(200).json({ message: 'Opportunity saved successfully' });
+});
+/**
+ * @route DELETE /api/users/me/saved-opportunities/:id
+ */
+router.delete('/me/saved-opportunities/:id', authMiddleware_1.authenticate, (req, res) => {
+    const { id: opportunityId } = req.params;
+    const users = (0, users_1.getUsers)();
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    const initialLength = user.savedOpportunities.length;
+    user.savedOpportunities = user.savedOpportunities.filter(id => id !== opportunityId);
+    if (user.savedOpportunities.length < initialLength) {
+        (0, users_1.saveUsers)(users);
+    }
+    res.status(200).json({ message: 'Opportunity unsaved successfully' });
+});
+// ======================================================================================
 exports.default = router;

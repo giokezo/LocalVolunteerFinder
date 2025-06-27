@@ -1,0 +1,10 @@
+[
+  {
+    "id": "organizer-user-123",
+    "name": "Super Organizer",
+    "email": "organizer@test.com",
+    "password": "$2a$10$iU.vJ/9mNBJjG1x0J5d8UulA2wCIwGkSP1s2k0jL9J.NSl9aSUf4C",
+    "savedOpportunities": [],
+    "role": "organizer"
+  }
+]

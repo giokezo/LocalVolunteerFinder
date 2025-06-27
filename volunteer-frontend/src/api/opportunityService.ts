@@ -50,6 +50,33 @@ export const getOpportunities = async (
   return response.data;
 };
 
+/**
+ * Deletes an opportunity.
+ * @param opportunityId - The ID of the opportunity to delete.
+ */
+export const deleteOpportunity = async (opportunityId: string): Promise<void> => {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('User is not authenticated');
+
+  await axios.delete(`${API_URL}/${opportunityId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+/**
+ * Creates a new opportunity.
+ * @param opportunityData - The data for the new opportunity.
+ */
+export const createOpportunity = async (opportunityData: Omit<VolunteerOpportunity, 'id' | 'attendees' | 'organizerId'>) => {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('User is not authenticated');
+
+  const response = await axios.post(API_URL, opportunityData, {
+      headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return response.data;
+};
 
 /**
  * Allows a logged-in user to sign up for a specific opportunity.

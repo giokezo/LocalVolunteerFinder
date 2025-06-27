@@ -18,7 +18,7 @@ const RegisterPage = () => {
       login(user);
       navigate('/');
     } catch (err: any) {
-      alert(err.message || 'Registration failed');
+      console.log(err.message || 'Registration failed');
     }
   };
 

@@ -5,4 +5,5 @@ export interface VolunteerOpportunity {
   location: string;
   title: string;
   type: string;
+  organizerId: string; 
 }

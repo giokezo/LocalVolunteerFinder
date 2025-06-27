@@ -4,8 +4,8 @@ interface User {
   id: string;
   name: string;
   email: string;
+  role: 'volunteer' | 'organizer';
 }
-
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
