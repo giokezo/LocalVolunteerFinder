@@ -1,12 +1,9 @@
-// volunteer-frontend/src/api/opportunityService.ts
-
 import axios from 'axios';
 import type { VolunteerOpportunity } from '../types/VolunteerOpportunity';
 
 const API_URL = 'http://localhost:3000/api/opportunities';
 
 // Define the exact shape of the API response object we expect from the backend.
-// This interface is crucial for TypeScript to understand the data structure.
 export interface OpportunitiesResponse {
   opportunities: VolunteerOpportunity[];
   currentPage: number;
@@ -18,13 +15,20 @@ export interface OpportunitiesResponse {
  * Fetches a paginated and filtered list of volunteer opportunities.
  * @param page - The current page number to fetch.
  * @param limit - The number of items per page.
- * @param filters - An object containing optional keyword and type filters.
+ * @param filters - An object containing optional search and location filters.
  * @returns A promise that resolves to the structured OpportunitiesResponse object.
  */
 export const getOpportunities = async (
   page = 1, 
   limit = 10, 
-  filters: { keyword?: string; type?: string; } = {}
+  filters: { 
+    keyword?: string; 
+    type?: string;
+    zipcode?: string;
+    radius?: number;
+    latitude?: number;
+    longitude?: number;
+  } = {}
 ): Promise<OpportunitiesResponse> => {
   
   // Create URL parameters for the API request.
@@ -33,6 +37,7 @@ export const getOpportunities = async (
     limit: limit.toString(),
   });
 
+  // Append standard filters if they exist
   if (filters.keyword) {
     params.append('keyword', filters.keyword);
   }
@@ -40,13 +45,26 @@ export const getOpportunities = async (
     params.append('type', filters.type);
   }
 
+  // --- NEW: Append location filters if they exist ---
+  if (filters.zipcode) {
+    params.append('zipcode', filters.zipcode);
+  }
+  if (filters.radius) {
+    params.append('radius', filters.radius.toString());
+  }
+  if (filters.latitude) {
+    params.append('latitude', filters.latitude.toString());
+  }
+  if (filters.longitude) {
+    params.append('longitude', filters.longitude.toString());
+  }
+
   // Make the GET request. The generic <OpportunitiesResponse> tells Axios
   // that we expect `response.data` to conform to our interface.
   const response = await axios.get<OpportunitiesResponse>(`${API_URL}?${params.toString()}`);
   
-  // This is the key part: Axios wraps the actual server response in a `data` property.
-  // We must return `response.data` to pass the clean JSON object to our components.
-  // For example: { opportunities: [...], totalPages: 3, ... }
+  // Axios wraps the actual server response in a `data` property.
+  // We return `response.data` to pass the clean JSON object to our components.
   return response.data;
 };
 
@@ -86,7 +104,6 @@ export const createOpportunity = async (opportunityData: Omit<VolunteerOpportuni
 export const signUpForOpportunity = async (opportunityId: string) => {
   const token = localStorage.getItem('token');
   if (!token) {
-    // It's better to throw a specific, catchable error.
     throw new Error('User is not authenticated');
   }
 

@@ -15,13 +15,19 @@ const router = express.Router();
  * @access Public
  */
 router.get('/', (req, res) => {
-  const { keyword, type, page, limit } = req.query;
+  // Destructure all possible query parameters, including the new location-based ones.
+  const { keyword, type, page, limit, zipcode, radius, latitude, longitude } = req.query;
 
+  // Pass all parameters to the service function for processing.
   const results = findOpportunities({
     keyword: keyword as string,
     type: type as string,
     page: page ? parseInt(page as string, 10) : 1,
     limit: limit ? parseInt(limit as string, 10) : 10,
+    zipcode: zipcode as string,
+    radius: radius ? parseFloat(radius as string) : undefined,
+    latitude: latitude ? parseFloat(latitude as string) : undefined,
+    longitude: longitude ? parseFloat(longitude as string) : undefined,
   });
   
   res.json(results);
@@ -60,9 +66,9 @@ router.post('/', authenticate, (req: AuthRequest, res) => {
   }
 
   // 2. Validation: Check for required fields
-  const { title, description, date, location, type } = req.body;
-  if (!title || !description || !date || !location || !type) {
-    res.status(400).json({ error: 'Please provide all required fields.' });
+  const { title, description, date, location, type, latitude, longitude } = req.body;
+  if (!title || !description || !date || !location || !type || latitude === undefined || longitude === undefined) {
+    res.status(400).json({ error: 'Please provide all required fields, including latitude and longitude.' });
     return;
   }
 
@@ -74,6 +80,8 @@ router.post('/', authenticate, (req: AuthRequest, res) => {
     date,
     location,
     type,
+    latitude,
+    longitude,
     attendees: [],
     organizerId: req.user.id, // Assign ownership
   };
