@@ -81,6 +81,20 @@ export const deleteOpportunity = async (opportunityId: string): Promise<void> =>
   });
 };
 
+export const unregisterFromOpportunity = async (opportunityId: string) => {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('User is not authenticated');
+
+  const response = await axios.delete(
+    `${API_URL}/${opportunityId}/signup`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  return response.data;
+};
+
 /**
  * Creates a new opportunity.
  * @param opportunityData - The data for the new opportunity.

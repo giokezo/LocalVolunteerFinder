@@ -177,5 +177,29 @@ router.post('/:id/signup', authenticate, (req: AuthRequest, res) => {
   res.status(200).json({ message: 'Successfully signed up!' });
 });
 
+/**
+ * @route DELETE /api/opportunities/:id/signup
+ * @desc Allow a user to un-register from an opportunity
+ * @access Private (Any logged-in user)
+ */
+router.delete('/:id/signup', authenticate, (req: AuthRequest, res) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+
+  const opportunity = findOpportunityById(id);
+
+  if (!opportunity) {
+    res.status(404).json({ error: 'Opportunity not found' });
+    return;
+  }
+
+  // Filter the user's ID out of the attendees array
+  const initialLength = opportunity.attendees.length;
+  opportunity.attendees = opportunity.attendees.filter(attendeeId => attendeeId !== userId);
+
+  // You could save the data back to a file here if you were persisting it
+  
+  res.status(200).json({ message: 'Successfully unregistered!' });
+});
 
 export default router;

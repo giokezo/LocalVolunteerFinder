@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { getSavedOpportunities, getSignedUpOpportunities } from '../api/userService';
 import type { VolunteerOpportunity } from '../types/VolunteerOpportunity';
 import OpportunityList from '../components/card/OpportunityList';
-import styles from './DashboardPage.module.css'; // We will create this CSS file next
+import styles from './DashboardPage.module.css';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -14,10 +14,9 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const loadDashboardData = async () => {
-      if (!user) return; // Should not happen if page is protected, but good practice
+      if (!user) return;
       
       try {
-        // Fetch saved and signed-up opportunities concurrently
         const [saved, signedUp] = await Promise.all([
           getSavedOpportunities(),
           getSignedUpOpportunities()
@@ -36,11 +35,17 @@ const DashboardPage = () => {
   }, [user]);
 
   const handleToggleSave = (id: string, saved: boolean) => {
-    // If an item is unsaved, remove it from both lists visually
     if (!saved) {
       setSavedOpportunities(prev => prev.filter(op => op.id !== id));
-      setSignedUpOpportunities(prev => prev.map(op => op.id === id ? { ...op, isSaved: false } : op));
     }
+  };
+
+  // --- ADD THIS FUNCTION ---
+  // This handler will remove a deleted opportunity from the dashboard's state,
+  // making the UI update instantly.
+  const handleDelete = (id: string) => {
+    setSavedOpportunities(prev => prev.filter(op => op.id !== id));
+    setSignedUpOpportunities(prev => prev.filter(op => op.id !== id));
   };
 
   if (isLoading) {
@@ -70,6 +75,7 @@ const DashboardPage = () => {
             opportunities={signedUpOpportunities}
             savedIds={savedOpportunities.map(op => op.id)}
             onToggleSave={handleToggleSave}
+            onDelete={handleDelete} // <-- PASS THE PROP HERE
           />
         ) : (
           <p className={styles.emptyMessage}>You haven't signed up for any events yet.</p>
@@ -83,6 +89,7 @@ const DashboardPage = () => {
             opportunities={savedOpportunities}
             savedIds={savedOpportunities.map(op => op.id)}
             onToggleSave={handleToggleSave}
+            onDelete={handleDelete} // <-- AND PASS THE PROP HERE
           />
         ) : (
           <p className={styles.emptyMessage}>You don't have any saved opportunities.</p>
