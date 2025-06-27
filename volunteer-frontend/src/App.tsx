@@ -5,8 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import AboutUsPage from './pages/AboutUsPage';
 import SavedOpportunitiesPage from './pages/SavedOpportunitiesPage';
 import DashboardPage from './pages/DashboardPage';
-// REMOVED Import for CreateOpportunityPage
-// REMOVED Import for NotFoundPage
+import CreatorsPage from './pages/CreatorsPage';
 import Header from './components/card/Header';
 import { Toaster } from 'react-hot-toast';
 
@@ -33,15 +32,13 @@ function App() {
       />
       
       <Routes>
-        {/* These are the pages that actually exist in your project */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/about" element={<AboutUsPage />} />
         <Route path="/saved-opportunities" element={<SavedOpportunitiesPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        
-        {/* REMOVED the routes for /create-opportunity and the 404 page */}
+        <Route path="/creators" element={<CreatorsPage />} /> {/* <-- 2. ADD THE ROUTE */}
       </Routes>
     </>
   );
