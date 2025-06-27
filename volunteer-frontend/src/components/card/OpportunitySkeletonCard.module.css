@@ -1,0 +1,64 @@
+/* Defines the overall card shape */
+.skeletonCard {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+/* Base style for all skeleton placeholder elements */
+.skeleton {
+  background-color: #e5e7eb; /* A light gray */
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite linear;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f9fafb 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Specific sizes for different content types */
+.skeletonTitle {
+  width: 70%;
+  height: 24px;
+  margin-bottom: 16px;
+}
+
+.skeletonLine {
+  width: 100%;
+  height: 16px;
+  margin-bottom: 12px;
+}
+
+.skeletonLineHalf {
+  width: 50%;
+  height: 16px;
+  margin-bottom: 24px;
+}
+
+.skeletonActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeletonButton {
+  width: 70%;
+  height: 44px;
+  border-radius: 8px;
+}
+
+.skeletonSaveIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+}

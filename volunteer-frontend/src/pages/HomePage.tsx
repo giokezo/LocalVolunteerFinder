@@ -7,6 +7,7 @@ import SearchBar from "../components/card/SearchBar";
 import Filter from "../components/card/Filter";
 import Pagination from "../components/card/Pagination";
 import LocationFilter from "../components/card/LocationFilter";
+import OpportunitySkeletonCard from "../components/card/OpportunitySkeletonCard"; // <-- Import the new skeleton component
 import { useAuth } from "../context/AuthContext";
 import "../App.css";
 
@@ -31,31 +32,27 @@ const HomePage = () => {
   const { isAuthenticated } = useAuth();
 
   // --- Main Data Fetching Effect ---
-  // This effect runs whenever a filter or the page number changes.
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       setError(null);
       
-      // Build the filter object to send to the API
       const filters: any = { 
         keyword: searchTerm, 
         type: selectedType, 
         radius,
       };
       
-      // Prioritize user's direct coordinates over zipcode
       if (userCoords) {
         filters.latitude = userCoords.lat;
         filters.longitude = userCoords.lon;
-      } else if (zipcode && zipcode.length >= 5) { // Only search on valid-length zip
+      } else if (zipcode && zipcode.length >= 5) {
         filters.zipcode = zipcode;
       }
 
       try {
         const response = await getOpportunities(currentPage, 10, filters);
         
-        // Correctly set state from the response object's properties
         setOpportunities(response); 
         setTotalPages(response.totalPages);
         
@@ -77,8 +74,6 @@ const HomePage = () => {
   }, [isAuthenticated, currentPage, searchTerm, selectedType, zipcode, radius, userCoords]);
 
   // --- Effect to Reset Page Number ---
-  // This resets to page 1 whenever any filter changes, preventing
-  // the user from being on a page that no longer exists.
   useEffect(() => {
     if (currentPage !== 1) {
       setCurrentPage(1);
@@ -95,18 +90,17 @@ const HomePage = () => {
   };
 
   const handleDelete = (id: string) => {
-    // Optimistically update the UI by removing the deleted card from the list
     setOpportunities(prev => prev.filter(op => op.id !== id));
   };
   
   const handleUseMyLocation = (coords: { lat: number, lon: number }) => {
-    setZipcode(''); // Clear zipcode to prioritize coordinates
+    setZipcode('');
     setUserCoords(coords);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo(0, 0); // Scroll to top on page change
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -126,9 +120,22 @@ const HomePage = () => {
         />
       </div>
 
-      {isLoading && <div className="status-msg">Loading...</div>}
-      {error && <div className="error-msg">{error}</div>}
+      {/* --- UPDATED RENDERING LOGIC --- */}
 
+      {/* If loading, show a grid of skeleton cards */}
+      {isLoading && (
+        <div className="opportunity-list">
+          {/* Render 6 placeholder cards */}
+          {Array.from({ length: 6 }).map((_, index) => (
+            <OpportunitySkeletonCard key={index} />
+          ))}
+        </div>
+      )}
+
+      {/* If there's an error (and not loading), show the error message */}
+      {error && !isLoading && <div className="error-msg">{error}</div>}
+
+      {/* If not loading and no error, show the actual opportunity list */}
       {!isLoading && !error && (
         <>
           <OpportunityList 
