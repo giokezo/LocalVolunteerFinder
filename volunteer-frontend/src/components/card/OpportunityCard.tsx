@@ -2,31 +2,46 @@ import type { VolunteerOpportunity } from "../../types/VolunteerOpportunity";
 import styles from './OpportunityCard.module.css';
 import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
-import { signUpForOpportunity } from '../../api/opportunityService';
+import { signUpForOpportunity, deleteOpportunity, unregisterFromOpportunity } from '../../api/opportunityService';
 import { saveOpportunity, unsaveOpportunity } from '../../api/userService';
-import { Bookmark, BookmarkCheck } from 'lucide-react'; // optional: replace with any icon or text
+import { Bookmark, BookmarkCheck, Edit, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast'; // <-- 1. IMPORT TOAST
 
 interface Props {
   opportunity: VolunteerOpportunity;
-  isSaved: boolean; // <-- from HomePage
-  onToggleSave: (id: string, saved: boolean) => void; // <-- from HomePage to update saved state
+  isSaved: boolean;
+  onToggleSave: (id: string, saved: boolean) => void;
+  onDelete: (id: string) => void;
 }
 
-export const OpportunityCard = ({ opportunity, isSaved, onToggleSave }: Props) => {
-  const { isAuthenticated } = useAuth();
-  const [signedUp, setSignedUp] = useState(false);
+export const OpportunityCard = ({ opportunity, isSaved, onToggleSave, onDelete }: Props) => {
+  const { isAuthenticated, user } = useAuth();
+  
+  const [signedUp, setSignedUp] = useState(
+    opportunity.attendees.includes(user?.id || '')
+  );
+
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const handleSignup = async () => {
+  // 2. REMOVE THE OLD ERROR STATE
+  // const [error, setError] = useState(''); // <-- This is no longer needed
+
+  const handleSignupToggle = async () => {
     setLoading(true);
-    setError('');
+    // setError(''); // No longer needed
     try {
-      await signUpForOpportunity(opportunity.id);
-      setSignedUp(true);
+      if (signedUp) {
+        await unregisterFromOpportunity(opportunity.id);
+        setSignedUp(false);
+        toast.success('Unregistered successfully!'); // <-- 3. USE TOAST
+      } else {
+        await signUpForOpportunity(opportunity.id);
+        setSignedUp(true);
+        toast.success('Signed up successfully!'); // <-- 3. USE TOAST
+      }
     } catch (err: any) {
-      setError(err?.response?.data?.error || 'Signup failed');
+      toast.error(err?.response?.data?.error || 'Action failed'); // <-- 3. USE TOAST
     } finally {
       setLoading(false);
     }
@@ -39,14 +54,30 @@ export const OpportunityCard = ({ opportunity, isSaved, onToggleSave }: Props) =
       if (isSaved) {
         await unsaveOpportunity(opportunity.id);
         onToggleSave(opportunity.id, false);
+        toast.success('Opportunity unsaved.'); // <-- 3. USE TOAST
       } else {
         await saveOpportunity(opportunity.id);
         onToggleSave(opportunity.id, true);
+        toast.success('Opportunity saved!'); // <-- 3. USE TOAST
       }
     } catch (err) {
       console.error("Save/Unsave failed", err);
+      toast.error('Failed to update saved status.'); // <-- 3. USE TOAST
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to permanently delete this opportunity?')) {
+      try {
+        await deleteOpportunity(opportunity.id);
+        onDelete(opportunity.id);
+        toast.success('Opportunity deleted.'); // <-- 3. USE TOAST
+      } catch (err: any) {
+        // Replace alert with toast
+        toast.error(err.response?.data?.error || 'Failed to delete opportunity.'); // <-- 3. USE TOAST
+      }
     }
   };
 
@@ -57,33 +88,42 @@ export const OpportunityCard = ({ opportunity, isSaved, onToggleSave }: Props) =
       <p><strong>Date:</strong> {opportunity.date}</p>
       <p><strong>Location:</strong> {opportunity.location}</p>
       <p><strong>Type:</strong> {opportunity.type}</p>
+      <p><strong>Attendees:</strong> {opportunity.attendees.length}</p>
 
+      {/* Organizer-specific actions */}
+      {isAuthenticated && user?.role === 'organizer' && user.id === opportunity.organizerId && (
+        <div className={styles.organizerActions}>
+          <button className={styles.editButton}>
+            <Edit size={16} /> Edit
+          </button>
+          <button onClick={handleDelete} className={styles.deleteButton}>
+            <Trash2 size={16} /> Delete
+          </button>
+        </div>
+      )}
+
+      {/* General user actions */}
       {isAuthenticated ? (
-        <>
-          <div className={styles.actions}>
-            {signedUp ? (
-              <button disabled>✅ Signed Up</button>
-            ) : (
-              <button onClick={handleSignup} disabled={loading}>
-                {loading ? 'Signing up...' : 'Sign Up'}
-              </button>
-            )}
+        <div className={styles.actions}>
+          <button onClick={handleSignupToggle} disabled={loading}>
+            {loading ? '...' : (signedUp ? '✅ Signed Up (Cancel?)' : 'Sign Up')}
+          </button>
 
-            <button
-              onClick={handleSaveToggle}
-              disabled={saving}
-              title={isSaved ? 'Unsave' : 'Save'}
-              className={styles.saveButton}
-            >
-              {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
-            </button>
-          </div>
-        </>
+          <button
+            onClick={handleSaveToggle}
+            disabled={saving}
+            title={isSaved ? 'Unsave' : 'Save'}
+            className={styles.saveButton}
+          >
+            {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+          </button>
+        </div>
       ) : (
         <p className={styles.loginPrompt}>Login to sign up or save</p>
       )}
 
-      {error && <p className={styles.error}>{error}</p>}
+      {/* 4. REMOVE THE OLD ERROR DISPLAY */}
+      {/* {error && <p className={styles.error}>{error}</p>} <-- This is no longer needed */}
     </div>
   );
 };
